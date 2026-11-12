@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import os
@@ -59,6 +58,14 @@ if 'qty_oni' not in st.session_state:
     st.session_state.qty_oni = 1
 if 'qty_tur' not in st.session_state:
     st.session_state.qty_tur = 1
+if 'qty_tur_pow' not in st.session_state:
+    st.session_state.qty_tur_pow = 1
+if 'qty_red_beet' not in st.session_state:
+    st.session_state.qty_red_beet = 1
+if 'qty_dry_eggplant' not in st.session_state:
+    st.session_state.qty_dry_eggplant = 1
+if 'qty_malt' not in st.session_state:
+    st.session_state.qty_malt = 1
 
 def change_menu(target_menu):
     st.session_state.menu = target_menu
@@ -123,7 +130,7 @@ if st.session_state.menu == "농장소개":
         - **하우스 스마트 재배**: 3월부터 11월까지 최적의 환경에서 자라는 명품 가지
         - **땅을 쉬게 하는 고집**: 7~8월 한여름 휴작을 통해 토양 충전 및 가을 수확 준비
         - **당일 수확 / 당일 발송**: 6월과 10월, 가장 달콤한 찰옥수수 직거래
-        - **건강한 먹거리**: 제철에 수확한 신선한 양파, 마늘, 그리고 건강한 강황 직거래
+        - **건강한 먹거리**: 제철에 수확한 신선한 양파, 마늘, 그리고 건강한 강황 및 가공 농산물 직거래
         """)
     with col2:
         st.info("💡 **7~8월 가지 휴작 안내**\n\n더 맛있는 가을 가지 생산을 위해 한여름(7~8월)에는 하우스가 쉬어가는 기간입니다. 이 시기를 피해 제철에 가장 맛있는 농산물을 만나보세요!")
@@ -132,10 +139,11 @@ elif st.session_state.menu == "제철 농산물 (쇼핑)":
     st.header("🍆 해담은 대표 농산물")
     st.info("💡 상품별 수량을 선택하신 후 **[장바구니 담기]**를 누르면 여러 상품을 함께 담을 수 있습니다.")
     
-    cols = st.columns(4)
+    # 1행 상품들 (가지, 옥수수, 양파&마늘, 건강 강황)
+    cols1 = st.columns(4)
     
     # 1. 명품 가지
-    with cols[0]:
+    with cols1[0]:
         show_product_image(["가지.jpg", "가지.png", "eggplant.jpg", "eggplant.png"], "🍆")
         st.subheader("명품 가지")
         st.write("출하: **3월 ~ 6월 / 9월 ~ 11월**")
@@ -157,7 +165,7 @@ elif st.session_state.menu == "제철 농산물 (쇼핑)":
                 st.warning("수량을 1개 이상 선택해 주세요.")
 
     # 2. 여름/가을 옥수수
-    with cols[1]:
+    with cols1[1]:
         show_product_image(["옥수수.jpg", "옥수수.png", "corn.jpg", "corn.png"], "🌽")
         st.subheader("여름/가을 옥수수")
         st.write("출하: **6월 ~ 7월 / 10월**")
@@ -176,7 +184,7 @@ elif st.session_state.menu == "제철 농산물 (쇼핑)":
                 st.warning("수량을 1개 이상 선택해 주세요.")
 
     # 3. 양파 & 마늘
-    with cols[2]:
+    with cols1[2]:
         show_product_image(["양파마늘.jpg", "양파마늘.png", "onion.jpg", "onion.png"], "🧅")
         st.subheader("양파 & 마늘")
         st.write("출하: **수확 후 연중 저장판매**")
@@ -195,7 +203,7 @@ elif st.session_state.menu == "제철 농산물 (쇼핑)":
                 st.warning("수량을 1개 이상 선택해 주세요.")
 
     # 4. 건강 강황
-    with cols[3]:
+    with cols1[3]:
         show_product_image(["강황.png", "강황.jpg", "turmeric.jpg", "turmeric.png"], "🟡")
         st.subheader("건강 강황")
         st.write("출하: **생강황 / 분말 / 환**")
@@ -209,6 +217,87 @@ elif st.session_state.menu == "제철 농산물 (쇼핑)":
             if qty_tur > 0:
                 st.session_state.cart.append({"name": "건강 강황", "price": price_tur, "unit": f"강황분말 500g x {qty_tur}개"})
                 st.success(f"강황분말 {qty_tur}개가 장바구니에 담겼습니다!")
+                st.rerun()
+            else:
+                st.warning("수량을 1개 이상 선택해 주세요.")
+
+    st.markdown("---")
+    
+    # 2행 추가 상품들 (강황가루, 레드비트, 건가지, 엿기름)
+    cols2 = st.columns(4)
+
+    # 5. 강황가루 200g (18,000원)
+    with cols2[0]:
+        show_product_image(["강황가루.jpg", "강황가루.png"], "🟡")
+        st.subheader("강황가루 200g")
+        st.write("출하: **연중 상시 판매**")
+        st.write("가격: **200g / 18,000원**")
+        
+        qty_tur_pow = st.number_input("수량 (개)", min_value=0, max_value=50, step=1, key="qty_tur_pow")
+        price_tur_pow = qty_tur_pow * 18000
+        
+        st.write(f"예상 금액: **{price_tur_pow:,}원**")
+        if st.button("🛒 장바구니 담기", key="btn_tur_pow"):
+            if qty_tur_pow > 0:
+                st.session_state.cart.append({"name": "강황가루", "price": price_tur_pow, "unit": f"200g x {qty_tur_pow}개"})
+                st.success(f"강황가루 200g {qty_tur_pow}개가 장바구니에 담겼습니다!")
+                st.rerun()
+            else:
+                st.warning("수량을 1개 이상 선택해 주세요.")
+
+    # 6. 레드비트(건비트) 90g (7,800원)
+    with cols2[1]:
+        show_product_image(["레드비트.jpg", "레드비트.png", "beet.jpg"], "🔴")
+        st.subheader("레드비트(건비트)")
+        st.write("출하: **연중 상시 판매**")
+        st.write("가격: **90g / 7,800원**")
+        
+        qty_red_beet = st.number_input("수량 (개)", min_value=0, max_value=50, step=1, key="qty_red_beet")
+        price_red_beet = qty_red_beet * 7800
+        
+        st.write(f"예상 금액: **{price_red_beet:,}원**")
+        if st.button("🛒 장바구니 담기", key="btn_red_beet"):
+            if qty_red_beet > 0:
+                st.session_state.cart.append({"name": "레드비트(건비트)", "price": price_red_beet, "unit": f"90g x {qty_red_beet}개"})
+                st.success(f"레드비트(건비트) 90g {qty_red_beet}개가 장바구니에 담겼습니다!")
+                st.rerun()
+            else:
+                st.warning("수량을 1개 이상 선택해 주세요.")
+
+    # 7. 건가지 70g (4,000원)
+    with cols2[2]:
+        show_product_image(["건가지.jpg", "건가지.png"], "🍆")
+        st.subheader("건가지")
+        st.write("출하: **연중 상시 판매**")
+        st.write("가격: **70g / 4,000원**")
+        
+        qty_dry_eggplant = st.number_input("수량 (개)", min_value=0, max_value=50, step=1, key="qty_dry_eggplant")
+        price_dry_eggplant = qty_dry_eggplant * 4000
+        
+        st.write(f"예상 금액: **{price_dry_eggplant:,}원**")
+        if st.button("🛒 장바구니 담기", key="btn_dry_eggplant"):
+            if qty_dry_eggplant > 0:
+                st.session_state.cart.append({"name": "건가지", "price": price_dry_eggplant, "unit": f"70g x {qty_dry_eggplant}개"})
+                st.success(f"건가지 70g {qty_dry_eggplant}개가 장바구니에 담겼습니다!")
+                st.rerun()
+            else:
+                st.warning("수량을 1개 이상 선택해 주세요.")
+
+    # 8. 엿기름 500g (5,400원)
+    with cols2[3]:
+        show_product_image(["엿기름.jpg", "엿기름.png", "malt.jpg"], "🌾")
+        st.subheader("엿기름")
+        st.write("출하: **연중 상시 판매**")
+        st.write("가격: **500g / 5,400원**")
+        
+        qty_malt = st.number_input("수량 (개)", min_value=0, max_value=50, step=1, key="qty_malt")
+        price_malt = qty_malt * 5400
+        
+        st.write(f"예상 금액: **{price_malt:,}원**")
+        if st.button("🛒 장바구니 담기", key="btn_malt"):
+            if qty_malt > 0:
+                st.session_state.cart.append({"name": "엿기름", "price": price_malt, "unit": f"500g x {qty_malt}개"})
+                st.success(f"엿기름 500g {qty_malt}개가 장바구니에 담겼습니다!")
                 st.rerun()
             else:
                 st.warning("수량을 1개 이상 선택해 주세요.")
@@ -374,9 +463,9 @@ elif st.session_state.menu == "농장 출하 캘린더":
     st.header("📅 해담은 연간 농산물 출하 캘린더")
     
     calendar_data = {
-        "품목": ["하우스 가지", "여름 옥수수", "양파 / 마늘", "가을 옥수수", "건강 강황"],
-        "주요 출하 시기": ["3월 ~ 6월, 9월 ~ 11월", "6월 ~ 7월", "초여름 수확 후 지속 판매", "10월 (가을 한정!)", "연중 (가공품)"],
-        "특이사항": ["7~8월 고온기 휴작", "당일 수확/발송", "망 단위 / 소포장", "가을 2차 수확 특선", "분말, 환, 즙 옵션"]
+        "품목": ["하우스 가지", "여름 옥수수", "양파 / 마늘", "가을 옥수수", "건강 강황", "강황가루", "레드비트(건비트)", "건가지", "엿기름"],
+        "주요 출하 시기": ["3월 ~ 6월, 9월 ~ 11월", "6월 ~ 7월", "초여름 수확 후 지속 판매", "10월 (가을 한정!)", "연중 (가공품)", "연중 상시", "연중 상시", "연중 상시", "연중 상시"],
+        "특이사항": ["7~8월 고온기 휴작", "당일 수확/발송", "망 단위 / 소포장", "가을 2차 수확 특선", "분말, 환, 즙 옵션", "200g 포장", "90g 포장", "70g 포장", "500g 포장"]
     }
     st.table(pd.DataFrame(calendar_data))
 
