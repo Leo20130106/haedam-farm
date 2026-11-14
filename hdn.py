@@ -37,11 +37,20 @@ def send_sms_to_admin(order_info):
     api_secret = st.secrets["SOLAPI_SECRET"]
     sender_phone = st.secrets["SENDER_PHONE"]
 
-    # 여러 명의 관리자 번호 불러오기 (리스트 형태)
-    admin_phones = st.secrets["ADMIN_PHONES"]
-    if isinstance(admin_phones, str):
-      # 토몰 설정에 따라 문자열로 읽힐 경우를 대비한 안전 장치
-      admin_phones = [p.strip() for p in admin_phones.split(",")]
+    # 📌 [안전 장치 강화] 여러 명의 관리자 번호를 리스트 또는 문자열에서 완벽하게 추출
+    raw_admin_phones = st.secrets["ADMIN_PHONES"]
+    admin_phones = []
+
+    if isinstance(raw_admin_phones, list):
+      admin_phones = [str(p).strip() for p in raw_admin_phones if str(p).strip()]
+    elif isinstance(raw_admin_phones, str):
+      cleaned_str = (
+          raw_admin_phones.replace("[", "")
+          .replace("]", "")
+          .replace('"', "")
+          .replace("'", "")
+      )
+      admin_phones = [p.strip() for p in cleaned_str.split(",") if p.strip()]
 
     # 상품 목록 텍스트 정리
     items_str = ", ".join(
